@@ -1,0 +1,38 @@
+ #Titanic Dataset
+#While the purpose of this exercise right now is for a non python based blog, eventually this will be a tutorial in itself I imagine.
+
+#Load Data
+import pandas as pd
+from sklearn import tree
+import numpy as np
+
+url = "https://raw.githubusercontent.com/mGalarnyk/Python_Tutorials/master/Kaggle/Titanic/train.csv"
+
+# Load Dataset into pandas dataframe
+df = pd.read_csv(url)
+
+# change sex to binary
+df['Sex'] = df['Sex'].map( {'female':0, 'male': 1}).astype(int)
+
+#Take subset of the dataset
+df = df[['Sex', 'Age', 'Fare', 'Survived']]
+
+df.Sex.value_counts(dropna = False)
+df.Fare.value_counts(dropna = False)
+
+#Input Age with mean
+df.loc[df.Age.isna(), 'Age'] = np.ceil(df.Age.mean())
+
+clf = tree.DecisionTreeClassifier(max_depth=2)
+clf = clf.fit(df[['Sex', 'Age']], df[['Survived']])
+tree.export_graphviz(clf,
+                     out_file = "decisionTreeTitanic.dot",
+                     feature_names =['Sex', 'Age'],
+                     class_names = ['Dead', 'Alive'],
+                     proportion = True,
+                     rotate = True,
+                     filled = True)
+
+print("DecisionTreeTitanic.dot created")
+
+
